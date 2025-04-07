@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import './App.css'; 
+import ReactPlayer from 'react-player';
+import './App.css';
 
 function App() {
-  const categories = ['Populares', 'Nuevos Lanzamientos', 'Tendencias'];
   const videos = [
     { id: 1, title: 'Video 1', thumbnail: 'https://via.placeholder.com/150', url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'series' },
     { id: 2, title: 'Video 2', thumbnail: 'https://via.placeholder.com/150', url: 'https://www.w3schools.com/html/movie.mp4', type: 'peliculas' },
     { id: 3, title: 'Video 3', thumbnail: 'https://via.placeholder.com/150', url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'series' },
     { id: 4, title: 'Video 4', thumbnail: 'https://via.placeholder.com/150', url: 'https://www.w3schools.com/html/movie.mp4', type: 'peliculas' },
+    { id: 5, title: 'Video Largo', thumbnail: 'https://via.placeholder.com/150', url: 'https://youtu.be/Tnh_kPHp9LM', type: 'peliculas' },
   ];
 
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [currentSection, setCurrentSection] = useState('inicio'); 
-  const [myList, setMyList] = useState([]); 
+  const [currentSection, setCurrentSection] = useState('inicio'); // Estado para la sección actual
+  const [myList, setMyList] = useState([]); // Estado para "Mi Lista"
 
   const handleAddToList = (video) => {
     if (!myList.includes(video)) {
@@ -22,13 +23,24 @@ function App() {
 
   const renderContent = () => {
     if (selectedVideo) {
+      const isYouTube = selectedVideo.url.includes('youtu');
       return (
         <div className="video-player">
           <button onClick={() => setSelectedVideo(null)}>Volver</button>
-          <video controls autoPlay>
-            <source src={selectedVideo.url} type="video/mp4" />
-            Tu navegador no soporta el elemento de video.
-          </video>
+          {isYouTube ? (
+            <ReactPlayer
+              url={selectedVideo.url}
+              controls
+              playing
+              width="100%"
+              height="100%"
+            />
+          ) : (
+            <video controls autoPlay preload="auto">
+              <source src={selectedVideo.url} type="video/mp4" />
+              Tu navegador no soporta el elemento de video.
+            </video>
+          )}
         </div>
       );
     }
@@ -99,9 +111,9 @@ function App() {
       );
     }
 
-    return categories.map((category) => (
-      <div key={category} className="category">
-        <h2>{category}</h2>
+    return (
+      <div className="category">
+        <h2>Populares</h2>
         <div className="video-list">
           {videos.map((video) => (
             <div
@@ -116,12 +128,11 @@ function App() {
           ))}
         </div>
       </div>
-    ));
+    );
   };
 
   return (
     <div className="app">
-      {/* Barra de navegación */}
       <nav className="navbar">
         <h1>Streaming Video</h1>
         <ul>
@@ -132,7 +143,6 @@ function App() {
         </ul>
       </nav>
 
-      {/* Contenido principal */}
       <div className="content">{renderContent()}</div>
     </div>
   );
